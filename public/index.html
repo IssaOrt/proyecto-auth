@@ -23,15 +23,11 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
         body {
             background-color: var(--bg-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px;
         }
         .card {
-            width: 100%;
-            max-width: 380px;
+            width: 100%; max-width: 390px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
@@ -42,34 +38,31 @@
         .sub { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 22px; }
         label { display:block; font-size:0.85rem; font-weight:600; color:#574f66; margin-bottom:6px; }
         input {
-            width: 100%;
-            padding: 10px 12px;
+            width: 100%; padding: 10px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.92rem;
-            margin-bottom: 16px;
+            border-radius: 8px; font-size: 0.92rem; margin-bottom: 16px;
         }
         input:focus { outline: none; border-color: var(--brand-blue); }
         button {
-            width: 100%;
-            background-color: var(--brand-blue);
-            color: #fff;
-            border: none;
-            padding: 11px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
+            width: 100%; background-color: var(--brand-blue); color: #fff;
+            border: none; padding: 11px; font-size: 0.92rem; font-weight: 600;
+            border-radius: 8px; cursor: pointer;
         }
         button:hover { background-color: var(--brand-dark); }
         button:disabled { opacity: 0.6; cursor: not-allowed; }
-        .msg {
-            margin-top: 16px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            display: none;
+        .captcha-box { margin-bottom: 16px; }
+        .captcha-fila { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .captcha-img {
+            border: 1px solid var(--border-color); border-radius: 8px;
+            background: #fff; line-height: 0; flex-shrink: 0;
         }
+        .captcha-img svg { display: block; }
+        .btn-recargar {
+            width: auto; padding: 8px 10px; font-size: 0.78rem;
+            background: #efeaf9; color: var(--brand-dark);
+        }
+        .btn-recargar:hover { background: #e2daf6; }
+        .msg { margin-top: 16px; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; display: none; }
         .msg.error { display:block; background: var(--error-bg); border:1px solid var(--error-border); color: var(--error-text); }
         .msg.success { display:block; background: var(--success-bg); border:1px solid var(--success-border); color: var(--success-text); }
     </style>
@@ -88,6 +81,17 @@
                 <label for="password">Contraseña:</label>
                 <input type="password" id="password" name="password" required autocomplete="current-password">
             </div>
+
+            <div class="captcha-box">
+                <label for="captchaRespuesta">Verificación anti-robot:</label>
+                <div class="captcha-fila">
+                    <div class="captcha-img" id="captchaImg"></div>
+                    <button type="button" class="btn-recargar" id="btnRecargar" title="Generar otro desafío">Otro</button>
+                </div>
+                <input type="text" id="captchaRespuesta" inputmode="numeric" autocomplete="off"
+                       placeholder="Escriba el resultado" required>
+            </div>
+
             <button type="submit" id="submitBtn">Iniciar Sesión</button>
         </form>
 
@@ -95,13 +99,33 @@
     </div>
 
     <script>
-        // IMPORTANTE: este script NO valida credenciales, NO calcula hashes
-        // y NO decide bloqueos. Solo envía el POST al servidor y muestra
-        // la respuesta. Toda la seguridad vive en el backend (ver routes/auth.js
-        // y middleware/bruteForceProtection.js), tal como exige la guía.
+        // Este script NO valida credenciales, NO calcula hashes y NO conoce la
+        // respuesta del captcha. Solo pide el desafío, envía el POST y muestra
+        // lo que responda el servidor. Toda la seguridad vive en el backend.
         const form = document.getElementById("loginForm");
         const msg = document.getElementById("msg");
         const submitBtn = document.getElementById("submitBtn");
+        const captchaImg = document.getElementById("captchaImg");
+        const captchaRespuesta = document.getElementById("captchaRespuesta");
+        const btnRecargar = document.getElementById("btnRecargar");
+
+        let captchaIdActual = null;
+
+        async function cargarCaptcha() {
+            captchaImg.innerHTML = "";
+            captchaRespuesta.value = "";
+            try {
+                const resp = await fetch("/captcha");
+                const data = await resp.json();
+                captchaIdActual = data.captchaId;
+                captchaImg.innerHTML = data.imagenSvg;
+            } catch (err) {
+                captchaImg.textContent = "No se pudo cargar la verificación.";
+            }
+        }
+
+        btnRecargar.addEventListener("click", cargarCaptcha);
+        cargarCaptcha();
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -109,14 +133,16 @@
             msg.className = "msg";
             msg.textContent = "";
 
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
             try {
                 const resp = await fetch("/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({
+                        username: document.getElementById("username").value,
+                        password: document.getElementById("password").value,
+                        captchaId: captchaIdActual,
+                        captchaRespuesta: captchaRespuesta.value
+                    })
                 });
                 const data = await resp.json();
 
@@ -130,6 +156,8 @@
                 msg.className = "msg error";
                 msg.textContent = "No se pudo contactar al servidor.";
             } finally {
+                // Cada intento consume el desafío, así que siempre se pide uno nuevo.
+                await cargarCaptcha();
                 submitBtn.disabled = false;
             }
         });
