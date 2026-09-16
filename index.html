@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Criptoanálisis Clásico - Universidad El Bosque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta clara y cálida: pergamino + tinta violeta + acentos teal/ámbar. Sin negros ni fondos oscuros. */
+            --bg-main: #faf7f2;
+            --card-bg: #fffdfa;
+            --text-primary: #3a3245;
+            --text-secondary: #837a92;
+            --brand-blue: #6a4fd6;
+            --brand-dark: #563fb8;
+            --brand-light: #efe9fb;
+            --border-color: #e8e0d6;
+            --success-bg: #f0f9f0;
+            --success-border: #bfe3c2;
+            --success-text: #2f7d4f;
+            --teal: #1a8f82;
+            --teal-dark: #147268;
+            --amber: #c07a1e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle, #e7e0d3 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-primary);
+            padding: 40px 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 20px 50px -25px rgba(90, 70, 140, 0.25);
+            padding: 40px 44px;
+        }
+
+        .header {
+            padding-bottom: 22px;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 64px;
+            height: 4px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--brand-blue), var(--teal));
+        }
+
+        .header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.4px;
+        }
+
+        .header .subtitle {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .header .intro {
+            font-size: 0.95rem;
+            color: #574f66;
+            max-width: 560px;
+            line-height: 1.55;
+            margin-top: 14px;
+        }
+
+        .section {
+            margin-bottom: 34px;
+            padding-bottom: 34px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--step-color, var(--brand-blue));
+            color: #ffffff;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #574f66;
+            margin-bottom: 6px;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.92rem;
+            color: var(--text-primary);
+            background-color: #ffffff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        textarea {
+            height: 90px;
+            resize: vertical;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 3px var(--brand-light);
+        }
+
+        textarea[readonly] {
+            background-color: var(--success-bg);
+            border-color: var(--success-border);
+            color: var(--success-text);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: var(--brand-blue);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.15s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--brand-dark);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button.btn-secondary {
+            background-color: var(--teal);
+        }
+
+        button.btn-secondary:hover {
+            background-color: var(--teal-dark);
+        }
+
+        button.btn-attack {
+            background-color: var(--amber);
+        }
+        button.btn-attack:hover {
+            background-color: #9c6414;
+        }
+
+        button.btn-mini {
+            padding: 5px 12px;
+            font-size: 0.76rem;
+            border-radius: 6px;
+        }
+
+        .stats-panel {
+            background-color: var(--brand-light);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 9px;
+            font-size: 0.92rem;
+        }
+
+        .stats-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: var(--brand-dark);
+        }
+
+        .badge {
+            background-color: #ffffff;
+            color: var(--brand-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        .freq-grid {
+            display: grid;
+            grid-template-columns: repeat(27, 1fr);
+            gap: 3px;
+            background-color: var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .freq-cell {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 6px 0;
+        }
+
+        .freq-cell .letter {
+            font-size: 0.78rem;
+            font-weight: 700;
+            background-color: var(--brand-light);
+            border-bottom: 1px solid var(--border-color);
+            padding: 3px 0;
+            color: var(--brand-dark);
+        }
+
+        .freq-cell .count {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-family: 'Space Mono', monospace;
+            padding-top: 4px;
+        }
+
+        .attack-block {
+            border: 1px solid var(--border-color);
+            background-color: #fffefb;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .attack-block:hover {
+            box-shadow: 0 12px 24px -18px rgba(90, 70, 140, 0.35);
+        }
+
+        .attack-block h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .attack-block p.desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .result-card {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 11px 14px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            transition: border-color 0.15s;
+        }
+
+        .result-card.best {
+            background-color: var(--success-bg);
+            border-color: var(--success-border);
+        }
+
+        .result-card .result-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .result-card .result-key {
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: var(--brand-dark);
+        }
+
+        .result-card .result-score {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .result-card .result-preview {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            color: #574f66;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 28px 20px; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .freq-grid { grid-template-columns: repeat(9, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Laboratorio de Criptoanálisis Clásico</h1>
+        <div class="subtitle">Seguridad de la Información · Universidad El Bosque</div>
+        <p class="intro">Pega un criptograma, deja que el índice de coincidencia te diga a qué te enfrentas, y usa el módulo de ataque para recuperar la clave sin conocerla de antemano.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="step-num" style="--step-color:#8a8296;">1</span>Normalización y Limpieza de Texto</div>
+        <div style="margin-bottom: 12px;">
+            <label for="inputText">Texto Original de Entrada:</label>
+            <textarea id="inputText" placeholder="Ingrese el texto a procesar (texto plano o criptograma)..."></textarea>
+        </div>
+        <button onclick="procesarTexto()">Normalizar Texto</button>
+
+        <div style="margin-top: 14px;">
+            <label for="cleanText">Texto Procesado (27 Caracteres - Mayúsculas A-Z y Ñ):</label>
+            <textarea id="cleanText" readonly placeholder="El texto limpio aparecerá aquí..."></textarea>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="step-num" style="--step-color:#1a8f82;">2</span>Diagnóstico Estadístico e Índice de Coincidencia (IC)</div>
+
+        <div class="stats-panel">
+            <div class="stats-row">
+                <span>Longitud del Texto (N):</span>
+                <span class="stat-value" id="statN">0</span>
+            </div>
+            <div class="stats-row">
+                <span>Índice de Coincidencia (IC):</span>
+                <span class="stat-value" id="statIC">0.0000</span>
+            </div>
+            <div class="stats-row">
+                <span>Diagnóstico Criptográfico:</span>
+                <span class="badge" id="statDiag">Sin datos</span>
+            </div>
+        </div>
+
+        <label>Distribución Local de Frecuencias (Alfabeto Español Mod 27):</label>
+        <div id="freqGrid" class="freq-grid"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="step-num" style="--step-color:#6a4fd6;">3</span>Cifrado / Descifrado (clave conocida)</div>
+        <div class="grid-3">
+            <div>
+                <label for="cipherType">Algoritmo:</label>
+                <select id="cipherType" onchange="toggleKeys()">
+                    <option value="cesar">Cifrado César</option>
+                    <option value="afin">Cifrado Afín</option>
+                    <option value="vigenere">Cifrado Vigenère</option>
+                </select>
+            </div>
+
+            <div id="keyCesarBox">
+                <label for="keyB_Cesar">Desplazamiento (b):</label>
+                <input type="number" id="keyB_Cesar" value="5">
+            </div>
+
+            <div id="keyAfinBox_A" style="display:none;">
+                <label for="keyA_Afin">Multiplicador (a) [mcd(a,27)=1]:</label>
+                <input type="number" id="keyA_Afin" value="5">
+            </div>
+
+            <div id="keyAfinBox_B" style="display:none;">
+                <label for="keyB_Afin">Desplazamiento (b):</label>
+                <input type="number" id="keyB_Afin" value="7">
+            </div>
+
+            <div id="keyVigenereBox" style="display:none;">
+                <label for="keyText_Vigenere">Clave (Texto):</label>
+                <input type="text" id="keyText_Vigenere" value="NUBE">
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="ejecutarAccion(true)">Ejecutar Cifrado</button>
+            <button class="btn-secondary" onclick="ejecutarAccion(false)">Ejecutar Descifrado</button>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <label for="outputText">Resultado Obtenido:</label>
+            <textarea id="outputText" readonly style="background-color: #ffffff; font-family: 'Space Mono', monospace;"></textarea>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="step-num" style="--step-color:#c07a1e;">4</span>Módulo de Ataque (Criptograma Ciego)</div>
+        <div class="attack-block">
+            <h3>César — Fuerza Bruta</h3>
+            <p class="desc">Prueba los 26 desplazamientos posibles y mide qué tan parecido es cada resultado al español real (chi²: entre más bajo, mejor). Se queda con el más bajo.</p>
+            <button class="btn-attack" onclick="atacarCesarUI()">Ejecutar Fuerza Bruta</button>
+            <div id="resultCesar"></div>
+        </div>
+
+        <div class="attack-block">
+            <h3>Afín — Análisis de Frecuencias (ecuaciones)</h3>
+            <p class="desc">Toma las letras más repetidas del criptograma, asume que son "E" y "A", arma el sistema C=(aM+b) mod 27 y prueba las combinaciones válidas de (a, b).</p>
+            <button class="btn-attack" onclick="atacarAfinUI()">Ejecutar Análisis de Frecuencias</button>
+            <div id="resultAfin"></div>
+        </div>
+
+        <div class="attack-block">
+            <h3>Vigenère — Método de Kasiski</h3>
+            <p class="desc">Busca fragmentos repetidos para estimar la longitud de la clave, divide el texto en columnas y rompe cada una como un César independiente.</p>
+            <button class="btn-attack" onclick="atacarVigenereUI()">Ejecutar Kasiski</button>
+            <div id="resultVigenere"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ALFABETO = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+    const MOD = 27;
+    // Frecuencias de referencia del español (%) tomadas de la guía + Ñ (valor tipico ~0.31%)
+    const FREC_ES = {A:12.53,B:1.42,C:4.68,D:5.86,E:13.68,F:0.69,G:1.01,H:0.70,I:6.25,J:0.44,K:0.02,
+                      L:4.97,M:3.15,N:6.71,Ñ:0.31,O:8.68,P:2.51,Q:0.88,R:6.87,S:7.98,T:4.63,U:3.93,
+                      V:0.90,W:0.01,X:0.22,Y:0.90,Z:0.52};
+
+    function initFreqTable() {
+        const grid = document.getElementById("freqGrid");
+        grid.innerHTML = "";
+        ALFABETO.forEach(l => {
+            const cell = document.createElement("div");
+            cell.className = "freq-cell";
+            cell.innerHTML = `<div class="letter">${l}</div><div class="count">0</div>`;
+            grid.appendChild(cell);
+        });
+    }
+    initFreqTable();
+
+    // ---------- NORMALIZACIÓN ----------
+    function normalizar(texto) {
+        return texto
+            .toUpperCase()
+            .replace(/Ñ/g, "__SPANISH_ENE__")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/__SPANISH_ENE__/g, "Ñ")
+            .replace(/[^A-ZÑ]/g, "");
+    }
+
+    function procesarTexto() {
+        const input = document.getElementById("inputText").value;
+        const limpio = normalizar(input);
+        document.getElementById("cleanText").value = limpio;
+        calcularEstadisticas(limpio);
+
+        // Al procesar un texto nuevo, se limpian los resultados anteriores
+        // (Sección 3 y Sección 4) para que no queden respuestas viejas confundiendo.
+        document.getElementById("outputText").value = "";
+        document.getElementById("resultCesar").innerHTML = "";
+        document.getElementById("resultAfin").innerHTML = "";
+        document.getElementById("resultVigenere").innerHTML = "";
+    }
+
+    // ---------- ESTADÍSTICAS / IC ----------
+    function calcularEstadisticas(texto) {
+        const N = texto.length;
+        document.getElementById("statN").innerText = N;
+
+        if (N <= 1) {
+            document.getElementById("statIC").innerText = "0.0000";
+            document.getElementById("statDiag").innerText = "Texto insuficiente";
+            initFreqTable();
+            return;
+        }
+
+        const frecs = {};
+        ALFABETO.forEach(l => frecs[l] = 0);
+        for (let char of texto) {
+            if (frecs[char] !== undefined) frecs[char]++;
+        }
+
+        let suma = 0;
+        ALFABETO.forEach(l => {
+            suma += frecs[l] * (frecs[l] - 1);
+        });
+        const ic = suma / (N * (N - 1));
+
+        document.getElementById("statIC").innerText = ic.toFixed(4);
+
+        // Umbrales ajustados: la guía da valores teóricos (0.077 mono / 0.038-0.045 poli)
+        // pero en textos cortos reales el IC fluctúa, por eso se usan rangos con margen.
+        let diag = "";
+        if (ic >= 0.060) {
+            diag = "Monoalfabético (César / Afín)";
+        } else if (ic >= 0.030 && ic < 0.060) {
+            diag = "Polialfabético (Vigenère)";
+        } else {
+            diag = "No determinado (texto muy corto o ruido)";
+        }
+        document.getElementById("statDiag").innerText = diag;
+
+        const grid = document.getElementById("freqGrid");
+        grid.innerHTML = "";
+        ALFABETO.forEach(l => {
+            const cell = document.createElement("div");
+            cell.className = "freq-cell";
+            const pct = ((frecs[l] / N) * 100).toFixed(0);
+            cell.innerHTML = `<div class="letter">${l}</div><div class="count">${frecs[l]}<br><span style="font-size:0.65rem; color:#94a3b8;">${pct}%</span></div>`;
+            grid.appendChild(cell);
+        });
+    }
+
+    function toggleKeys() {
+        const type = document.getElementById("cipherType").value;
+        document.getElementById("keyCesarBox").style.display = type === "cesar" ? "block" : "none";
+        document.getElementById("keyAfinBox_A").style.display = type === "afin" ? "block" : "none";
+        document.getElementById("keyAfinBox_B").style.display = type === "afin" ? "block" : "none";
+        document.getElementById("keyVigenereBox").style.display = type === "vigenere" ? "block" : "none";
+    }
+
+    // ---------- ARITMÉTICA MODULAR ----------
+    function modInverse(a, m) {
+        a = ((a % m) + m) % m;
+        for (let x = 1; x < m; x++) {
+            if ((a * x) % m === 1) return x;
+        }
+        return -1;
+    }
+
+    // ---------- TRANSFORMACIONES ----------
+    function transformarCesar(texto, b, cifrar) {
+        return texto.split("").map(char => {
+            const m = ALFABETO.indexOf(char);
+            if (m === -1) return char;
+            const shift = cifrar ? b : MOD - (((b % MOD) + MOD) % MOD);
+            return ALFABETO[(((m + shift) % MOD) + MOD) % MOD];
+        }).join("");
+    }
+
+    function transformarAfin(texto, a, b, cifrar) {
+        const invA = modInverse(a, MOD);
+        if (invA === -1) {
+            alert("El valor de 'a' debe ser coprimo con 27 [mcd(a,27)=1]. Valores válidos: 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 26.");
+            return "";
+        }
+        return texto.split("").map(char => {
+            const m = ALFABETO.indexOf(char);
+            if (m === -1) return char;
+            if (cifrar) {
+                return ALFABETO[(((a * m) + b) % MOD + MOD) % MOD];
+            } else {
+                let val = (invA * (m - b)) % MOD;
+                if (val < 0) val += MOD;
+                return ALFABETO[val];
+            }
+        }).join("");
+    }
+
+    function transformarVigenere(texto, clave, cifrar) {
+        if (!clave) return texto;
+        let keyIdx = 0;
+        return texto.split("").map(char => {
+            const m = ALFABETO.indexOf(char);
+            if (m === -1) return char;
+            const k = ALFABETO.indexOf(clave[keyIdx % clave.length]);
+            keyIdx++;
+            const shift = cifrar ? k : MOD - k;
+            return ALFABETO[(((m + shift) % MOD) + MOD) % MOD];
+        }).join("");
+    }
+
+    function ejecutarAccion(cifrar) {
+        const texto = document.getElementById("cleanText").value;
+        if (!texto) { alert("Primero normaliza un texto en la sección 1."); return; }
+
+        const tipo = document.getElementById("cipherType").value;
+        let resultado = "";
+
+        if (tipo === "cesar") {
+            const b = parseInt(document.getElementById("keyB_Cesar").value);
+            resultado = transformarCesar(texto, b, cifrar);
+        } else if (tipo === "afin") {
+            const a = parseInt(document.getElementById("keyA_Afin").value);
+            const b = parseInt(document.getElementById("keyB_Afin").value);
+            resultado = transformarAfin(texto, a, b, cifrar);
+        } else if (tipo === "vigenere") {
+            const clave = normalizar(document.getElementById("keyText_Vigenere").value);
+            resultado = transformarVigenere(texto, clave, cifrar);
+        }
+
+        document.getElementById("outputText").value = resultado;
+    }
+
+    // ---------- MÓDULO DE ATAQUE ----------
+
+    // Estadístico chi-cuadrado: qué tan parecida es la distribución de letras del texto
+    // candidato a la distribución esperada del español. Menor puntaje = más parecido.
+    function chiCuadrado(texto) {
+        const N = texto.length;
+        if (N === 0) return Infinity;
+        const cnt = {};
+        for (const c of texto) cnt[c] = (cnt[c] || 0) + 1;
+        let score = 0;
+        for (const l of ALFABETO) {
+            const observado = cnt[l] || 0;
+            const esperado = (FREC_ES[l] / 100) * N;
+            if (esperado > 0) score += Math.pow(observado - esperado, 2) / esperado;
+        }
+        return score;
+    }
+
+    function indiceCoincidencia(texto) {
+        const N = texto.length;
+        if (N <= 1) return 0;
+        const cnt = {};
+        for (const c of texto) cnt[c] = (cnt[c] || 0) + 1;
+        let s = 0;
+        for (const l in cnt) s += cnt[l] * (cnt[l] - 1);
+        return s / (N * (N - 1));
+    }
+
+    function getCriptograma() {
+        const texto = document.getElementById("cleanText").value;
+        if (!texto || texto.length < 10) {
+            alert("Primero pega y normaliza el criptograma en la sección 1 (mínimo ~10 caracteres).");
+            return null;
+        }
+        return texto;
+    }
+
+    // --- A. Ataque César (fuerza bruta + chi2) ---
+    function atacarCesar(cripto) {
+        const candidatos = [];
+        for (let b = 0; b < MOD; b++) {
+            const cand = transformarCesar(cripto, b, false);
+            candidatos.push({ b, score: chiCuadrado(cand), texto: cand });
+        }
+        candidatos.sort((x, y) => x.score - y.score);
+        return candidatos;
+    }
+
+    function atacarCesarUI() {
+        const cripto = getCriptograma();
+        if (!cripto) return;
+        const resultados = atacarCesar(cripto).slice(0, 3);
+        const cont = document.getElementById("resultCesar");
+        cont.innerHTML = "";
+        resultados.forEach((r, i) => {
+            const div = document.createElement("div");
+            div.className = "result-card" + (i === 0 ? " best" : "");
+            div.innerHTML = `
+                <div class="result-head">
+                    <span class="result-key">${i === 0 ? "★ " : ""}b = ${r.b}</span>
+                    <span class="result-score">chi² = ${r.score.toFixed(1)}</span>
+                    <button class="btn-mini" onclick="usarClaveCesar(${r.b})">Usar esta clave</button>
+                </div>
+                <div class="result-preview">${r.texto.substring(0, 140)}...</div>
+            `;
+            cont.appendChild(div);
+        });
+    }
+
+    function usarClaveCesar(b) {
+        document.getElementById("cipherType").value = "cesar";
+        toggleKeys();
+        document.getElementById("keyB_Cesar").value = b;
+        ejecutarAccion(false);
+        const out = document.getElementById("outputText");
+        if (out && typeof out.scrollIntoView === "function") {
+            out.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    // --- B. Ataque Afín (ecuaciones con letras más frecuentes) ---
+    function atacarAfin(cripto) {
+        const freq = {};
+        ALFABETO.forEach(l => freq[l] = 0);
+        for (const c of cripto) freq[c]++;
+
+        // Las 4 letras cifradas más frecuentes son las candidatas más probables a ser E o A
+        const ordenadas = ALFABETO.slice().sort((x, y) => freq[y] - freq[x]).slice(0, 4);
+        const idxE = ALFABETO.indexOf("E"); // 4
+        const inv_diffEA = modInverse(idxE, MOD); // inversa de (E-A) = E-0 = E
+
+        const candidatos = [];
+        const vistos = new Set();
+        for (const cE of ordenadas) {
+            for (const cA of ordenadas) {
+                if (cE === cA) continue;
+                const C1 = ALFABETO.indexOf(cE); // se asume texto plano = E
+                const C2 = ALFABETO.indexOf(cA); // se asume texto plano = A (=0)
+                const b = C2;
+                const diffC = ((C1 - C2) % MOD + MOD) % MOD;
+                const a = (diffC * inv_diffEA) % MOD;
+                if (a <= 0 || modInverse(a, MOD) === -1) continue;
+                const key = a + "-" + b;
+                if (vistos.has(key)) continue;
+                vistos.add(key);
+                const cand = transformarAfin(cripto, a, b, false);
+                candidatos.push({ a, b, score: chiCuadrado(cand), texto: cand });
+            }
+        }
+        candidatos.sort((x, y) => x.score - y.score);
+        return candidatos;
+    }
+
+    function atacarAfinUI() {
+        const cripto = getCriptograma();
+        if (!cripto) return;
+        const resultados = atacarAfin(cripto).slice(0, 3);
+        const cont = document.getElementById("resultAfin");
+        cont.innerHTML = "";
+        if (resultados.length === 0) {
+            cont.innerHTML = `<div class="result-card">No se encontraron combinaciones válidas. Prueba con un texto más largo.</div>`;
+            return;
+        }
+        resultados.forEach((r, i) => {
+            const div = document.createElement("div");
+            div.className = "result-card" + (i === 0 ? " best" : "");
+            div.innerHTML = `
+                <div class="result-head">
+                    <span class="result-key">${i === 0 ? "★ " : ""}a = ${r.a}, b = ${r.b}</span>
+                    <span class="result-score">chi² = ${r.score.toFixed(1)}</span>
+                    <button class="btn-mini" onclick="usarClaveAfin(${r.a}, ${r.b})">Usar esta clave</button>
+                </div>
+                <div class="result-preview">${r.texto.substring(0, 140)}...</div>
+            `;
+            cont.appendChild(div);
+        });
+    }
+
+    function usarClaveAfin(a, b) {
+        document.getElementById("cipherType").value = "afin";
+        toggleKeys();
+        document.getElementById("keyA_Afin").value = a;
+        document.getElementById("keyB_Afin").value = b;
+        ejecutarAccion(false);
+        const out = document.getElementById("outputText");
+        if (out && typeof out.scrollIntoView === "function") {
+            out.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    // --- C. Ataque Vigenère (Kasiski + IC por columna + chi2 por columna) ---
+    function buscarSecuenciasRepetidas(cripto) {
+        const posiciones = {};
+        for (let len = 3; len <= 5; len++) {
+            for (let i = 0; i + len <= cripto.length; i++) {
+                const seq = cripto.substr(i, len);
+                if (!posiciones[seq]) posiciones[seq] = [];
+                posiciones[seq].push(i);
+            }
+        }
+        const distancias = [];
+        let secuenciasEncontradas = 0;
+        for (const seq in posiciones) {
+            const arr = posiciones[seq];
+            if (arr.length > 1) {
+                secuenciasEncontradas++;
+                for (let i = 1; i < arr.length; i++) distancias.push(arr[i] - arr[0]);
+            }
+        }
+        return { distancias, secuenciasEncontradas };
+    }
+
+    function icPromedioColumnas(cripto, L) {
+        let total = 0;
+        for (let col = 0; col < L; col++) {
+            let columna = "";
+            for (let i = col; i < cripto.length; i += L) columna += cripto[i];
+            total += indiceCoincidencia(columna);
+        }
+        return total / L;
+    }
+
+    function romperColumnasVigenere(cripto, L) {
+        let clave = "";
+        for (let col = 0; col < L; col++) {
+            let columna = "";
+            for (let i = col; i < cripto.length; i += L) columna += cripto[i];
+            let mejor = null;
+            for (let b = 0; b < MOD; b++) {
+                const cand = transformarCesar(columna, b, false);
+                const s = chiCuadrado(cand);
+                if (!mejor || s < mejor.s) mejor = { s, b };
+            }
+            clave += ALFABETO[mejor.b];
+        }
+        return clave;
+    }
+
+    function atacarVigenere(cripto) {
+        const { distancias, secuenciasEncontradas } = buscarSecuenciasRepetidas(cripto);
+
+        // Candidatas de longitud de clave por IC promedio de columnas (2 a 12).
+        // Se prefiere la L más PEQUEÑA cuyo IC promedio se acerque al del español (~0.077),
+        // porque los múltiplos de la clave real también dan buen IC pero no son la clave mínima.
+        const candidatasL = [];
+        for (let L = 2; L <= 12; L++) {
+            candidatasL.push({ L, ic: icPromedioColumnas(cripto, L) });
+        }
+        candidatasL.sort((x, y) => y.ic - x.ic);
+
+        const UMBRAL_IC = 0.065;
+        let mejoresL = candidatasL.filter(c => c.ic >= UMBRAL_IC).sort((a, b) => a.L - b.L);
+        if (mejoresL.length === 0) mejoresL = candidatasL.slice(0, 3); // fallback si nada supera el umbral
+
+        const probarL = mejoresL.slice(0, 4).map(c => c.L);
+        const resultados = probarL.map(L => {
+            const clave = romperColumnasVigenere(cripto, L);
+            const texto = transformarVigenere(cripto, clave, false);
+            return { L, clave, score: chiCuadrado(texto), texto, ic: icPromedioColumnas(cripto, L) };
+        });
+        // OJO: NO se ordena por chi2 del texto final. Una L más grande (multiplo de la real)
+        // tiene columnas mas cortas y su chi2 puede parecer mejor por puro azar (sobreajuste).
+        // El criterio correcto es preferir la L mas PEQUEÑA que ya tenga un IC de columna alto,
+        // por eso "resultados" se deja ordenado por L ascendente (mejoresL ya viene asi).
+
+        return { resultados, distanciasEncontradas: distancias.length, secuenciasEncontradas };
+    }
+
+    function atacarVigenereUI() {
+        const cripto = getCriptograma();
+        if (!cripto) return;
+        const { resultados, distanciasEncontradas, secuenciasEncontradas } = atacarVigenere(cripto);
+        const cont = document.getElementById("resultVigenere");
+        cont.innerHTML = `<div class="result-card" style="background:#fff;">
+            Secuencias repetidas (3-5 letras) encontradas: <b>${secuenciasEncontradas}</b> —
+            distancias analizadas: <b>${distanciasEncontradas}</b>
+        </div>`;
+
+        if (resultados.length === 0) {
+            cont.innerHTML += `<div class="result-card">No se pudo estimar la longitud de clave. Prueba con un texto más largo.</div>`;
+            return;
+        }
+
+        resultados.forEach((r, i) => {
+            const div = document.createElement("div");
+            div.className = "result-card" + (i === 0 ? " best" : "");
+            div.innerHTML = `
+                <div class="result-head">
+                    <span class="result-key">${i === 0 ? "★ " : ""}L = ${r.L} → clave = "${r.clave}"</span>
+                    <span class="result-score">chi² = ${r.score.toFixed(1)} | IC col. = ${r.ic.toFixed(4)}</span>
+                    <button class="btn-mini" onclick="usarClaveVigenere('${r.clave}')">Usar esta clave</button>
+                </div>
+                <div class="result-preview">${r.texto.substring(0, 140)}...</div>
+            `;
+            cont.appendChild(div);
+        });
+    }
+
+    function usarClaveVigenere(clave) {
+        document.getElementById("cipherType").value = "vigenere";
+        toggleKeys();
+        document.getElementById("keyText_Vigenere").value = clave;
+        ejecutarAccion(false);
+        const out = document.getElementById("outputText");
+        if (out && typeof out.scrollIntoView === "function") {
+            out.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+</script>
+
+</body>
+</html>
