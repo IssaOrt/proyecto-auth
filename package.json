@@ -1,0 +1,17 @@
+{
+  "name": "auth-lab-seguridad-informacion",
+  "version": "2.0.0",
+  "description": "Laboratorio: Seguridad en Autenticacion Web (BCrypt + Middleware anti fuerza bruta, MySQL) - Universidad El Bosque",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js",
+    "demo:bruteforce": "node demo-bruteforce.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "mysql2": "^3.11.3"
+  }
+}
